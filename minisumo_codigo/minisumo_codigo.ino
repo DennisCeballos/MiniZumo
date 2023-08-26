@@ -1,5 +1,6 @@
 #include <NewPing.h>
 //Esta media rara esta libreria porque no existe en mi laptop, lo que implica que lo agrego ariana?
+//curioso
 
 
 const int sensorDerechoPin = 13; // Cambiar al pin que corresponda
