@@ -1,39 +1,44 @@
+//Constantes 
 const int IZQUIERDA = 0;
-const int FRENTE = 1;
-const int DERECHA = 2;
-
-
-const int sensorInfrarrojo = 12;  // Cambiar al pin que corresponda
-
-const int motorIzqN = 11; const int motorIzqP = 10;
-const int motorDerN =  8; const int motorDerP =  9;
+const int FRENTE    = 1;
+const int DERECHA   = 2;
 
 const int COLOR_NEGRO = 0;
+//
 
-const int Interruptor = A0;
+//Pines de los SENSORES INFRARROJOS
+const int sensorInfrarrojo = 12;  // Cambiar al pin que corresponda
+//
 
-//Estructura de sensor
-struct sensor {
+//Pines de los MOTORES
+const int motorIzqN = 11; const int motorIzqP = 10;
+const int motorDerN =  8; const int motorDerP =  9;
+//
+
+//Estructura de SensorUltrasonico
+struct SensorUltrasonico {
   int echo;
   int trig;
 };
 
-sensor sensorIzq = { 2, 3 };  // { Echo, Trigger }
-sensor sensorFrn = { 4, 5 };
-sensor sensorDer = { 6, 7 };
+SensorUltrasonico sensorIzq = { 2, 3 };  // { Echo, Trigger }
+SensorUltrasonico sensorFrn = { 4, 5 };
+SensorUltrasonico sensorDer = { 6, 7 };
 
+
+//Configurar todos los pines necesarios para la ejecución
 void setup() {
-  // Configurar los pines de los sensores como entradas
   Serial.begin(9600);  // Inicializar la comunicacion serial para ver los mensajes en el monitor
 
+  // Configurar los pines de los sensore☻☻s como entradas
   pinMode(motorIzqP, OUTPUT);
   pinMode(motorIzqN, OUTPUT);
   pinMode(motorDerP, OUTPUT);
   pinMode(motorDerN, OUTPUT);
 
-  //Activar con PinMode los pines de los sensores
-  //TRIGGERS OUTPUT
-  //ECHOES INPUT
+  //Activar con PinMode los pines de los SensoresUltrasonicos
+  //TRIGGERS necesita OUTPUT
+  //ECHOES   necesita INPUT
   pinMode(sensorIzq.trig, OUTPUT);
   pinMode(sensorIzq.echo, INPUT);
 
@@ -42,8 +47,6 @@ void setup() {
 
   pinMode(sensorFrn.trig, OUTPUT);
   pinMode(sensorFrn.echo, INPUT);
-
-  pinMode(Interruptor, OUTPUT);
 }
 
 //Calcula la distancia para un transmisor
@@ -64,8 +67,9 @@ float readDistance(int trigPin, int echoPin) {
 
   return distance;
 }
+#pragma region Movimientos posibles
 
-//Detiene todos los motores, REVISADO
+//Detiene todos los motores
 void detenerMotores() {
   Serial.println("DETENIENDO motores");
   digitalWrite(motorIzqP, LOW);
@@ -74,7 +78,7 @@ void detenerMotores() {
   digitalWrite(motorDerN, LOW);
 }
 
-//Gira el zumo hacia la derecha, REVISADO
+//Gira el zumo hacia la derecha
 void girarDerecha() {
   Serial.println("Girando a IZQUIERDA");
   digitalWrite(motorIzqP, HIGH);
@@ -83,7 +87,7 @@ void girarDerecha() {
   digitalWrite(motorDerN, LOW);
 }
 
-//Gira el zumo hacia la izquierda, REVISADO
+//Gira el zumo hacia la izquierda
 void girarIzquierda() {
   Serial.println("Girando a DERECHA");
   digitalWrite(motorIzqP, LOW);
@@ -92,18 +96,16 @@ void girarIzquierda() {
   digitalWrite(motorDerN, LOW);
 }
 
-//Mueve el zumo hacia adelante, REVISADO
+//Mueve el zumo hacia adelante
 void moverAdelante() {
   Serial.println("Moviendo ADELANTE");
   digitalWrite(motorIzqP, HIGH);
   digitalWrite(motorIzqN, LOW);
   digitalWrite(motorDerP, HIGH);
   digitalWrite(motorDerN, LOW);
-  delay(1000);
-  detenerMotores();
 }
 
-//Mueve el zumo hacia atras, REVISADO
+//Mueve el zumo hacia atras
 void moverAtras(){
   Serial.println("Moviendo ATRAS");
   digitalWrite(motorIzqP, LOW);
@@ -113,8 +115,15 @@ void moverAtras(){
 }
 
 //Elegir el ultrasonico que marque la menor distancia, y retornar la direccion de menor distancia
-int ultrasonicos() {
+int ultrasonicoMenor() {
 
+/*
+
+HAY UNA MEJOR FORMA DE HACER ESTA FUNCIÓN
+Cada sensor deberia de tener una "pared invisible máxima" desde la cual detecte si hay o no alguien ahí
+
+*/
+  
   //Lee la distacia en cada sensor
   //  funcion-> readDistance(trigger, echo);
   float distIzq = readDistance(sensorIzq.trig, sensorIzq.echo);
@@ -127,9 +136,8 @@ int ultrasonicos() {
   Serial.print(distFrn);
   Serial.print(", ");
   Serial.println(distDer);
-
+  
   //Esto reordena la lista de distancias de menor a mayor
-
   if (distIzq < distFrn && distIzq < distDer) {
     return IZQUIERDA;
   } else if (distDer < distFrn && distDer < distIzq) {
@@ -138,7 +146,7 @@ int ultrasonicos() {
     return FRENTE;
   }
 }
-
+#pragma endregion
 
 /*
 =======ESTRATEGIAS
@@ -147,9 +155,9 @@ int ultrasonicos() {
 //Estrategia de AnaMaria que ella entendera xdddddd
 //Estrategia como pensando
 void estrategia1() {
-  int locacionEnemigo = ultrasonicos();
+  int locacionEnemigo = ultrasonicoMenor();
 
-  switch (ultrasonicos()) {  //ACA PUEDE SUCEDER UN ERROR
+  switch (ultrasonicoMenor()) {  //ACA PUEDE SUCEDER UN ERROR
     case IZQUIERDA:
       girarIzquierda();
       break;
@@ -178,20 +186,16 @@ void estrategia2() {
   
   while (!enemigoDetectado) {
     girarIzquierda();
-    if (ultrasonicos() == FRENTE) { enemigoDetectado = true; }
+    if (ultrasonicoMenor() == FRENTE) { enemigoDetectado = true; }
   }
   moverAdelante();
 }
+
+
 //      MAIN LOOP
 void loop() {
-  estrategia2();
-  /*
-  delay(1000);
-  Serial.print(contador);
-  Serial.print(" Detectando con ultrasonicos -> ");
-  Serial.println(ultrasonicos());
-  Serial.println("");
-  contador += 1;
-  */
-  //Serial.println(digitalRead(Interruptor));
+
+
+
 }
+//
