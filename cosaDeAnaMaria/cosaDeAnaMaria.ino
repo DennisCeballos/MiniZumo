@@ -22,6 +22,7 @@ sensor sensorIzq = { 2, 3 };  // { Echo, Trigger }
 sensor sensorFrn = { 4, 5 };
 sensor sensorDer = { 6, 7 };
 
+
 void setup() {
   // Configurar los pines de los sensores como entradas
   Serial.begin(9600);  // Inicializar la comunicacion serial para ver los mensajes en el monitor
@@ -32,8 +33,8 @@ void setup() {
   pinMode(motorDerN, OUTPUT);
 
   //Activar con PinMode los pines de los sensores
-  //TRIGGERS OUTPUT
-  //ECHOES INPUT
+  //TRIGGERS necesita OUTPUT
+  //ECHOES   necesita INPUT
   pinMode(sensorIzq.trig, OUTPUT);
   pinMode(sensorIzq.echo, INPUT);
 
@@ -46,6 +47,7 @@ void setup() {
   pinMode(Interruptor, OUTPUT);
 }
 
+#pragma region Movimientos posibles
 //Calcula la distancia para un transmisor
 float readDistance(int trigPin, int echoPin) {
   // Generar un pulso de 10 microsegundos en el pin TRIG
@@ -113,7 +115,7 @@ void moverAtras(){
 }
 
 //Elegir el ultrasonico que marque la menor distancia, y retornar la direccion de menor distancia
-int ultrasonicos() {
+int ultrasonicoMenor() {
 
   //Lee la distacia en cada sensor
   //  funcion-> readDistance(trigger, echo);
@@ -138,7 +140,7 @@ int ultrasonicos() {
     return FRENTE;
   }
 }
-
+#pragma endregion
 
 /*
 =======ESTRATEGIAS
@@ -147,9 +149,9 @@ int ultrasonicos() {
 //Estrategia de AnaMaria que ella entendera xdddddd
 //Estrategia como pensando
 void estrategia1() {
-  int locacionEnemigo = ultrasonicos();
+  int locacionEnemigo = ultrasonicoMenor();
 
-  switch (ultrasonicos()) {  //ACA PUEDE SUCEDER UN ERROR
+  switch (ultrasonicoMenor()) {  //ACA PUEDE SUCEDER UN ERROR
     case IZQUIERDA:
       girarIzquierda();
       break;
@@ -178,20 +180,14 @@ void estrategia2() {
   
   while (!enemigoDetectado) {
     girarIzquierda();
-    if (ultrasonicos() == FRENTE) { enemigoDetectado = true; }
+    if (ultrasonicoMenor() == FRENTE) { enemigoDetectado = true; }
   }
   moverAdelante();
 }
+
 //      MAIN LOOP
 void loop() {
-  estrategia2();
-  /*
-  delay(1000);
-  Serial.print(contador);
-  Serial.print(" Detectando con ultrasonicos -> ");
-  Serial.println(ultrasonicos());
-  Serial.println("");
-  contador += 1;
-  */
-  //Serial.println(digitalRead(Interruptor));
+
+
+
 }
