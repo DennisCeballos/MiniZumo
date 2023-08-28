@@ -49,7 +49,6 @@ void setup() {
   pinMode(sensorFrn.echo, INPUT);
 }
 
-#pragma region Movimientos posibles
 //Calcula la distancia para un transmisor
 float readDistance(int trigPin, int echoPin) {
   // Generar un pulso de 10 microsegundos en el pin TRIG
@@ -68,8 +67,9 @@ float readDistance(int trigPin, int echoPin) {
 
   return distance;
 }
+#pragma region Movimientos posibles
 
-//Detiene todos los motores, REVISADO
+//Detiene todos los motores
 void detenerMotores() {
   Serial.println("DETENIENDO motores");
   digitalWrite(motorIzqP, LOW);
@@ -78,7 +78,7 @@ void detenerMotores() {
   digitalWrite(motorDerN, LOW);
 }
 
-//Gira el zumo hacia la derecha, REVISADO
+//Gira el zumo hacia la derecha
 void girarDerecha() {
   Serial.println("Girando a IZQUIERDA");
   digitalWrite(motorIzqP, HIGH);
@@ -87,7 +87,7 @@ void girarDerecha() {
   digitalWrite(motorDerN, LOW);
 }
 
-//Gira el zumo hacia la izquierda, REVISADO
+//Gira el zumo hacia la izquierda
 void girarIzquierda() {
   Serial.println("Girando a DERECHA");
   digitalWrite(motorIzqP, LOW);
@@ -96,7 +96,7 @@ void girarIzquierda() {
   digitalWrite(motorDerN, LOW);
 }
 
-//Mueve el zumo hacia adelante, REVISADO
+//Mueve el zumo hacia adelante
 void moverAdelante() {
   Serial.println("Moviendo ADELANTE");
   digitalWrite(motorIzqP, HIGH);
@@ -105,7 +105,7 @@ void moverAdelante() {
   digitalWrite(motorDerN, LOW);
 }
 
-//Mueve el zumo hacia atras, REVISADO
+//Mueve el zumo hacia atras
 void moverAtras(){
   Serial.println("Moviendo ATRAS");
   digitalWrite(motorIzqP, LOW);
@@ -116,7 +116,6 @@ void moverAtras(){
 
 //Elegir el ultrasonico que marque la menor distancia, y retornar la direccion de menor distancia
 int ultrasonicoMenor() {
-
   //Lee la distacia en cada sensor
   //  funcion-> readDistance(trigger, echo);
   float distIzq = readDistance(sensorIzq.trig, sensorIzq.echo);
@@ -129,9 +128,8 @@ int ultrasonicoMenor() {
   Serial.print(distFrn);
   Serial.print(", ");
   Serial.println(distDer);
-
+  
   //Esto reordena la lista de distancias de menor a mayor
-
   if (distIzq < distFrn && distIzq < distDer) {
     return IZQUIERDA;
   } else if (distDer < distFrn && distDer < distIzq) {
