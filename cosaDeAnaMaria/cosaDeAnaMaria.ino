@@ -116,6 +116,14 @@ void moverAtras(){
 
 //Elegir el ultrasonico que marque la menor distancia, y retornar la direccion de menor distancia
 int ultrasonicoMenor() {
+
+/*
+
+HAY UNA MEJOR FORMA DE HACER ESTA FUNCIÓN
+Cada sensor deberia de tener una "pared invisible máxima" desde la cual detecte si hay o no alguien ahí
+
+*/
+  
   //Lee la distacia en cada sensor
   //  funcion-> readDistance(trigger, echo);
   float distIzq = readDistance(sensorIzq.trig, sensorIzq.echo);
@@ -183,9 +191,11 @@ void estrategia2() {
   moverAdelante();
 }
 
+
 //      MAIN LOOP
 void loop() {
 
 
 
 }
+//
