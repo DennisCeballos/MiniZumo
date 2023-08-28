@@ -67,8 +67,9 @@ float readDistance(int trigPin, int echoPin) {
 
   return distance;
 }
-#pragma region Movimientos posibles
 
+
+#pragma region Movimientos posibles
 //Detiene todos los motores
 void detenerMotores() {
   Serial.println("DETENIENDO motores");
@@ -80,7 +81,7 @@ void detenerMotores() {
 
 //Gira el zumo hacia la derecha
 void girarDerecha() {
-  Serial.println("Girando a IZQUIERDA");
+  Serial.println("Girando a DERECHA");
   digitalWrite(motorIzqP, HIGH);
   digitalWrite(motorIzqN, LOW);
   digitalWrite(motorDerP, LOW);
@@ -89,7 +90,7 @@ void girarDerecha() {
 
 //Gira el zumo hacia la izquierda
 void girarIzquierda() {
-  Serial.println("Girando a DERECHA");
+  Serial.println("Girando a IZQUIERDA");
   digitalWrite(motorIzqP, LOW);
   digitalWrite(motorIzqN, LOW);
   digitalWrite(motorDerP, HIGH);
@@ -195,7 +196,7 @@ void estrategia2() {
 //      MAIN LOOP
 void loop() {
 
-
+  girarIzquierda();
 
 }
 //
