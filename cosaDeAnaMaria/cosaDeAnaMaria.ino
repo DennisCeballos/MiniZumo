@@ -1,38 +1,42 @@
+//Constantes 
 const int IZQUIERDA = 0;
-const int FRENTE = 1;
-const int DERECHA = 2;
-
-
-const int sensorInfrarrojo = 12;  // Cambiar al pin que corresponda
-
-const int motorIzqN = 11; const int motorIzqP = 10;
-const int motorDerN =  8; const int motorDerP =  9;
+const int FRENTE    = 1;
+const int DERECHA   = 2;
 
 const int COLOR_NEGRO = 0;
+//
 
-const int Interruptor = A0;
+//Pines de los SENSORES INFRARROJOS
+const int sensorInfrarrojo = 12;  // Cambiar al pin que corresponda
+//
 
-//Estructura de sensor
-struct sensor {
+//Pines de los MOTORES
+const int motorIzqN = 11; const int motorIzqP = 10;
+const int motorDerN =  8; const int motorDerP =  9;
+//
+
+//Estructura de SensorUltrasonico
+struct SensorUltrasonico {
   int echo;
   int trig;
 };
 
-sensor sensorIzq = { 2, 3 };  // { Echo, Trigger }
-sensor sensorFrn = { 4, 5 };
-sensor sensorDer = { 6, 7 };
+SensorUltrasonico sensorIzq = { 2, 3 };  // { Echo, Trigger }
+SensorUltrasonico sensorFrn = { 4, 5 };
+SensorUltrasonico sensorDer = { 6, 7 };
 
 
+//Configurar todos los pines necesarios para la ejecución
 void setup() {
-  // Configurar los pines de los sensores como entradas
   Serial.begin(9600);  // Inicializar la comunicacion serial para ver los mensajes en el monitor
 
+  // Configurar los pines de los sensore☻☻s como entradas
   pinMode(motorIzqP, OUTPUT);
   pinMode(motorIzqN, OUTPUT);
   pinMode(motorDerP, OUTPUT);
   pinMode(motorDerN, OUTPUT);
 
-  //Activar con PinMode los pines de los sensores
+  //Activar con PinMode los pines de los SensoresUltrasonicos
   //TRIGGERS necesita OUTPUT
   //ECHOES   necesita INPUT
   pinMode(sensorIzq.trig, OUTPUT);
@@ -43,8 +47,6 @@ void setup() {
 
   pinMode(sensorFrn.trig, OUTPUT);
   pinMode(sensorFrn.echo, INPUT);
-
-  pinMode(Interruptor, OUTPUT);
 }
 
 #pragma region Movimientos posibles
@@ -101,8 +103,6 @@ void moverAdelante() {
   digitalWrite(motorIzqN, LOW);
   digitalWrite(motorDerP, HIGH);
   digitalWrite(motorDerN, LOW);
-  delay(1000);
-  detenerMotores();
 }
 
 //Mueve el zumo hacia atras, REVISADO
