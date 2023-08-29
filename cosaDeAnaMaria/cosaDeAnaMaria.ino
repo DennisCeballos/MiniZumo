@@ -48,6 +48,8 @@ void setup() {
 
   pinMode(sensorFrn.trig, OUTPUT);
   pinMode(sensorFrn.echo, INPUT);
+
+  pinMode(sensorInfrarrojo, INPUT);
 }
 
 //Calcula la distancia para un transmisor
@@ -69,6 +71,16 @@ float readDistance(SensorUltrasonico sensor) {
   return distance;
 }
 
+bool detectarInfrarrojo(int pinSensor){
+  if( digitalRead(pinSensor) ==  1 ){
+    Serial.println("Algo Detected!");
+    return TRUE;
+  }
+  else {
+    return FALSE;
+    Serial.println("No hay NADA");
+  }
+}
 
 #pragma region Movimientos posibles
 //Detiene todos los motores
