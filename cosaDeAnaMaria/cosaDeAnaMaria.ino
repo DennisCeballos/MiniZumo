@@ -183,7 +183,7 @@ void estrategia1() {
 int contador = 0;
 bool enemigoDetectado = false;
 //EL zumo gira a la izquierda hasta que detecte al enemigo delante suyo, en ese momento se mueve hacia adelante.
-void estrategia2() {
+void estrategiaAntigua() {
   
   while (!enemigoDetectado) {
     girarIzquierda();
@@ -193,10 +193,23 @@ void estrategia2() {
 }
 
 
+void estrategiaBASE(){
+    while( ultrasonicoMenor != FRENTE ) {
+    girarDerecha();
+  }
+  moverAdelante();
+}
+
+
+bool unavez = true;
 //      MAIN LOOP
 void loop() {
 
-  girarIzquierda();
+  if (unavez){
+    delay(5000);
+    unavez = false;
+  }
+  estrategiaBASE();
 
 }
 //
