@@ -19,11 +19,12 @@ const int motorDerN =  8; const int motorDerP =  9;
 struct SensorUltrasonico {
   int echo;
   int trig;
+  int maximaDistancia;
 };
 
-SensorUltrasonico sensorIzq = { 2, 3 };  // { Echo, Trigger }
-SensorUltrasonico sensorFrn = { 4, 5 };
-SensorUltrasonico sensorDer = { 6, 7 };
+SensorUltrasonico sensorIzq = { 2, 3, 500 };  // { Echo, Trigger, MaximaDistancia }
+SensorUltrasonico sensorFrn = { 4, 5, 500 };
+SensorUltrasonico sensorDer = { 6, 7, 500 };
 
 
 //Configurar todos los pines necesarios para la ejecución
@@ -50,16 +51,16 @@ void setup() {
 }
 
 //Calcula la distancia para un transmisor
-float readDistance(int trigPin, int echoPin) {
+float readDistance(SensorUltrasonico sensor) {
   // Generar un pulso de 10 microsegundos en el pin TRIG
-  digitalWrite(trigPin, LOW);
+  digitalWrite(sensor.trig, LOW);
   delayMicroseconds(2);
-  digitalWrite(trigPin, HIGH);
+  digitalWrite(sensor.trig, HIGH);
   delayMicroseconds(10);
-  digitalWrite(trigPin, LOW);
+  digitalWrite(sensor.trig, LOW);
 
   // Leer el tiempo de duracion del pulso de eco en el pin ECHO
-  float duration = pulseIn(echoPin, HIGH);
+  float duration = pulseIn(sensor.echo, HIGH);
 
   // Calcular la distancia en centimetros usando la velocidad del sonido
   // en el aire (aproximadamente 343 m/s a 20gradosC)
@@ -87,6 +88,11 @@ void girarDerecha() {
   digitalWrite(motorDerP, LOW);
   digitalWrite(motorDerN, LOW);
 }
+void girarDerecha(int tiempo){
+  girarDerecha();
+  delay(tiempo);
+  detenerMotores();
+}
 
 //Gira el zumo hacia la izquierda
 void girarIzquierda() {
@@ -95,6 +101,11 @@ void girarIzquierda() {
   digitalWrite(motorIzqN, LOW);
   digitalWrite(motorDerP, HIGH);
   digitalWrite(motorDerN, LOW);
+}
+void girarIzquierda(int tiempo){
+  girarIzquierda();
+  delay(tiempo);
+  detenerMotores();
 }
 
 //Mueve el zumo hacia adelante
@@ -105,6 +116,11 @@ void moverAdelante() {
   digitalWrite(motorDerP, HIGH);
   digitalWrite(motorDerN, LOW);
 }
+void moverAdelante(int tiempo){
+  moverAdelante();
+  delay(tiempo);
+  detenerMotores();
+}
 
 //Mueve el zumo hacia atras
 void moverAtras(){
@@ -114,16 +130,14 @@ void moverAtras(){
   digitalWrite(motorDerP, LOW);
   digitalWrite(motorDerN, HIGH);
 }
+void moverAtras(int tiempo){
+  moverAtras();
+  delay(tiempo);
+  detenerMotores();
+}
 
 //Elegir el ultrasonico que marque la menor distancia, y retornar la direccion de menor distancia
 int ultrasonicoMenor() {
-
-/*
-
-HAY UNA MEJOR FORMA DE HACER ESTA FUNCIÓN
-Cada sensor deberia de tener una "pared invisible máxima" desde la cual detecte si hay o no alguien ahí
-
-*/
   
   //Lee la distacia en cada sensor
   //  funcion-> readDistance(trigger, echo);
@@ -147,6 +161,16 @@ Cada sensor deberia de tener una "pared invisible máxima" desde la cual detecte
     return FRENTE;
   }
 }
+
+int detectarUltrasonico(){
+  /*
+  
+  HAY UNA MEJOR FORMA DE HACER ESTA FUNCIÓN
+  Cada sensor deberia de tener una "pared invisible máxima" desde la cual detecte si hay o no alguien ahí
+  
+  */
+}
+
 #pragma endregion
 
 /*
