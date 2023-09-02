@@ -19,11 +19,12 @@ const int motorDerN =  8; const int motorDerP =  9;
 struct SensorUltrasonico {
   int echo;
   int trig;
+  int maximaDistancia;
 };
 
-SensorUltrasonico sensorIzq = { 2, 3 };  // { Echo, Trigger }
-SensorUltrasonico sensorFrn = { 4, 5 };
-SensorUltrasonico sensorDer = { 6, 7 };
+SensorUltrasonico sensorIzq = { 2, 3, 500 };  // { Echo, Trigger, MaximaDistancia }
+SensorUltrasonico sensorFrn = { 4, 5, 500 };
+SensorUltrasonico sensorDer = { 6, 7, 500 };
 
 
 //Configurar todos los pines necesarios para la ejecución
@@ -47,19 +48,21 @@ void setup() {
 
   pinMode(sensorFrn.trig, OUTPUT);
   pinMode(sensorFrn.echo, INPUT);
+
+  pinMode(sensorInfrarrojo, INPUT);
 }
 
 //Calcula la distancia para un transmisor
-float readDistance(int trigPin, int echoPin) {
+float readDistance(SensorUltrasonico sensor) {
   // Generar un pulso de 10 microsegundos en el pin TRIG
-  digitalWrite(trigPin, LOW);
+  digitalWrite(sensor.trig, LOW);
   delayMicroseconds(2);
-  digitalWrite(trigPin, HIGH);
+  digitalWrite(sensor.trig, HIGH);
   delayMicroseconds(10);
-  digitalWrite(trigPin, LOW);
+  digitalWrite(sensor.trig, LOW);
 
   // Leer el tiempo de duracion del pulso de eco en el pin ECHO
-  float duration = pulseIn(echoPin, HIGH);
+  float duration = pulseIn(sensor.echo, HIGH);
 
   // Calcular la distancia en centimetros usando la velocidad del sonido
   // en el aire (aproximadamente 343 m/s a 20gradosC)
@@ -67,8 +70,19 @@ float readDistance(int trigPin, int echoPin) {
 
   return distance;
 }
-#pragma region Movimientos posibles
 
+bool detectarInfrarrojo(int pinSensor){
+  if( digitalRead(pinSensor) ==  1 ){
+    Serial.println("Algo Detected!");
+    return TRUE;
+  }
+  else {
+    return FALSE;
+    Serial.println("No hay NADA");
+  }
+}
+
+#pragma region Movimientos posibles
 //Detiene todos los motores
 void detenerMotores() {
   Serial.println("DETENIENDO motores");
@@ -80,20 +94,30 @@ void detenerMotores() {
 
 //Gira el zumo hacia la derecha
 void girarDerecha() {
-  Serial.println("Girando a IZQUIERDA");
+  Serial.println("Girando a DERECHA");
   digitalWrite(motorIzqP, HIGH);
   digitalWrite(motorIzqN, LOW);
   digitalWrite(motorDerP, LOW);
   digitalWrite(motorDerN, LOW);
 }
+void girarDerecha(int tiempo){
+  girarDerecha();
+  delay(tiempo);
+  detenerMotores();
+}
 
 //Gira el zumo hacia la izquierda
 void girarIzquierda() {
-  Serial.println("Girando a DERECHA");
+  Serial.println("Girando a IZQUIERDA");
   digitalWrite(motorIzqP, LOW);
   digitalWrite(motorIzqN, LOW);
   digitalWrite(motorDerP, HIGH);
   digitalWrite(motorDerN, LOW);
+}
+void girarIzquierda(int tiempo){
+  girarIzquierda();
+  delay(tiempo);
+  detenerMotores();
 }
 
 //Mueve el zumo hacia adelante
@@ -104,6 +128,11 @@ void moverAdelante() {
   digitalWrite(motorDerP, HIGH);
   digitalWrite(motorDerN, LOW);
 }
+void moverAdelante(int tiempo){
+  moverAdelante();
+  delay(tiempo);
+  detenerMotores();
+}
 
 //Mueve el zumo hacia atras
 void moverAtras(){
@@ -113,16 +142,14 @@ void moverAtras(){
   digitalWrite(motorDerP, LOW);
   digitalWrite(motorDerN, HIGH);
 }
+void moverAtras(int tiempo){
+  moverAtras();
+  delay(tiempo);
+  detenerMotores();
+}
 
 //Elegir el ultrasonico que marque la menor distancia, y retornar la direccion de menor distancia
 int ultrasonicoMenor() {
-
-/*
-
-HAY UNA MEJOR FORMA DE HACER ESTA FUNCIÓN
-Cada sensor deberia de tener una "pared invisible máxima" desde la cual detecte si hay o no alguien ahí
-
-*/
   
   //Lee la distacia en cada sensor
   //  funcion-> readDistance(trigger, echo);
@@ -146,6 +173,16 @@ Cada sensor deberia de tener una "pared invisible máxima" desde la cual detecte
     return FRENTE;
   }
 }
+
+int detectarUltrasonico(){
+  /*
+  
+  HAY UNA MEJOR FORMA DE HACER ESTA FUNCIÓN
+  Cada sensor deberia de tener una "pared invisible máxima" desde la cual detecte si hay o no alguien ahí
+  
+  */
+}
+
 #pragma endregion
 
 /*
@@ -182,7 +219,7 @@ void estrategia1() {
 int contador = 0;
 bool enemigoDetectado = false;
 //EL zumo gira a la izquierda hasta que detecte al enemigo delante suyo, en ese momento se mueve hacia adelante.
-void estrategia2() {
+void estrategiaAntigua() {
   
   while (!enemigoDetectado) {
     girarIzquierda();
@@ -192,10 +229,23 @@ void estrategia2() {
 }
 
 
+void estrategiaBASE(){
+    while( ultrasonicoMenor != FRENTE ) {
+    girarDerecha();
+  }
+  moverAdelante();
+}
+
+
+bool unavez = true;
 //      MAIN LOOP
 void loop() {
 
-
+  if (unavez){
+    delay(5000);
+    unavez = false;
+  }
+  estrategiaBASE();
 
 }
 //
